@@ -5,7 +5,7 @@ draft: false
 math: true
 ---
 
-Writing reliable playbooks has always mattered. But when you automate the process with AI, it matters more than ever. A human analyst quietly compensates for the playbook's deficiencies, and even points them out so we can fix them. They also get it wrong sometimes, of course (mood, workload, how many coffees they've had), but the damage is local: just one or a few misclassified alerts. Give the same bad instruction to an automation and you get that bad call on every single alert, with nobody there to raise a hand about it.
+Writing reliable playbooks to guide the analysts who investigate alerts has always mattered. But when you automate that investigation with AI, it matters more than ever. A human analyst quietly compensates for the playbook's deficiencies, and even points them out so we can fix them. They also get it wrong sometimes, of course, but the damage is local: just one or a few misclassified alerts. Give the same bad instruction to an automation and you get that bad call on every single alert, with nobody there to raise a hand about it.
 
 I'm not saying we shouldn't automate. My point is that we should do our homework before creating a disaster, and writing reliable playbooks is part of it.
 
@@ -13,11 +13,11 @@ One of the difficulties I've always had when defining an investigation playbook 
 
 ## The request
 
-A former manager once asked me to write playbooks for our L1 investigations. He wanted the best possible investigation quality in every situation, so he asked for a playbook covering EVERY possible outcome of the use case. That way our L1 analysts would always know exactly what to do.
+A former manager asked me once to write playbooks for our L1 investigations. He wanted the best possible investigation quality in every situation, so he asked for a playbook covering EVERY possible outcome of the use case. That way our L1 analysts would always know exactly what to do.
 
-Anyone who has investigated an alert can see the problem. How am I supposed to think of all the possibilities beforehand, when sometimes the real reason for the alert has surprised me?
+Anyone who has ever investigated an alert can see the problem. How am I supposed to think of all the possibilities beforehand, when sometimes the real reason for the alert has surprised me?
 
-So I thought: well, managers. I'll cover the situations that come to mind and add more when they happen. A long time later, an idea came to me.
+So I thought: well, managers. I'll cover the situations that come to mind now and add more when they happen. A long time later, an idea came to me.
 
 ## How I used to write playbooks
 
@@ -35,7 +35,7 @@ The second approach is better. If the playbook is well written, the checks lead 
 
 I had just read Range, by David Epstein, and I was struck by how often people solve long-standing problems in their field by taking an idea from a completely unrelated one. Then I came across MECE, a principle from management consulting or some similarly boring grown-up stuff, and thought: I need to steal this.
 
-MECE stands for mutually exclusive, collectively exhaustive. Split your problem into subsets that don't overlap and that together cover everything.
+MECE stands for mutually exclusive, collectively exhaustive. **Split your problem into subsets that don't overlap and that together cover everything.**
 
 That fits our problem perfectly. We split our space of all possible outcomes for a particular use case in different outcome subsets, each one with its corresponding closure reason and remediation action (if needed). Mutual exclusivity means that our closure and remediation will be well-defined: incident or false positive, reset the password or don't. Collective exhaustiveness gives us the completeness I was after.
 
@@ -61,7 +61,7 @@ Now take a second property $B \subseteq U$. $\{B, B^c\}$ is another partition of
 
 $$U = (A \cup A^c) \cap (B \cup B^c) = (A \cap B) \cup (A \cap B^c) \cup (A^c \cap B) \cup (A^c \cap B^c)$$
 
-The four intersections reconstruct $U$ exactly.
+The four intersections reconstruct $U$.
 
 **Mutual exclusivity.** Take two different blocks. They must differ in at least one factor — say one sits inside $A$ and the other inside $A^c$ (the argument is the same if they differ in $B$). Since $A \cap A^c = \emptyset$, the two blocks share no events. Any two distinct blocks are disjoint. $\blacksquare$
 
@@ -71,9 +71,9 @@ Add a third property and each block partitions into two. Still a partition of $U
 
 Let's say we have a use case that fires when someone activates the Global Administrator role in Entra ID. An alert related to the user Paco was just received. What could have happened? Remember, we want to cover every single possibility.
 
-Two assumptions first, because we need to first define the universe. One, an activation of the role took place. Two, there was a sign-in from that user before the activation.
+Two assumptions first, because we need to first define our universe. One, an activation of the role took place. Two, there was a sign-in from that user before the activation.
 
-Note that this particular properties and partitions I defined are just an example and may not fit every environment. The idea is just to provide an illustration of the process, but it should be tailored to different telemetries and priorities in each organization.
+Note that the properties and partitions defined below are just an example, and may not fit every environment. The idea is to illustrate the process; the actual partitions should be tailored to the telemetry and priorities of each organization.
 
 Now the properties, each with its complement:
 
