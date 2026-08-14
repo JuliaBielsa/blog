@@ -1,0 +1,7 @@
+baseURL = "https://ejemplo.com/"
+languageCode = "es-es"
+title = "Blog"
+theme = "PaperMod"
+
+[params]
+  defaultTheme = "auto"
