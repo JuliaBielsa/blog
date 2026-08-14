@@ -18,7 +18,7 @@ A former manager asked me once to write playbooks for our L1 investigations. He 
 
 Anyone who has ever investigated an alert can see the problem. How am I supposed to think of all the possibilities beforehand, when sometimes the real reason for the alert has surprised me?
 
-So I thought: well, managers. I'll cover the situations that come to mind now and add more when they happen. A long time later, an idea came to me.
+So I thought — *well, managers.* I'll cover the situations that come to mind now and add more when they happen. A long time later, an idea came to me.
 
 ## How I used to write playbooks
 
@@ -34,7 +34,7 @@ The second approach is better. If the playbook is well written, the checks lead 
 
 ## Stealing from consulting
 
-I had just read Range, by David Epstein, and I was struck by how often people solve long-standing problems in their field by taking an idea from a completely unrelated one. Then I came across MECE, a principle from management consulting or some similarly boring grown-up stuff, and thought: I need to steal this.
+I had just read [*Range*](https://www.goodreads.com/book/show/44803159), by David Epstein, and I was struck by how often people solve long-standing problems in their field by taking an idea from a completely unrelated one. Then I came across MECE, a principle from management consulting or some similarly boring grown-up stuff, and thought: I need to steal this.
 
 MECE stands for mutually exclusive, collectively exhaustive. **Split your problem into subsets that don't overlap and that together cover everything.**
 
