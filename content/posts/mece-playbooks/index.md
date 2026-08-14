@@ -121,5 +121,3 @@ The MECE is for whoever writes the playbook, not for the analyst. The analyst ru
 Which is the point I wanted to get to. The hard part was never the automation, it's the work that must exist before it.
 
 As long as there are humans in the loop, writing low quality playbooks is not always a critical issue: the analyst fills the gaps with their own judgement and nobody finds out the instructions were incomplete. And if it goes wrong, we can always blame the inexperienced analyst. The moment you automate, the truth comes out. The automation will never improvise and do a better job than the instructions. Best case scenario, it will keep making the same mistakes as an analyst (it will make them faster though).
-
-Now it is more important than ever that this task that we so often ignored is given the attention it deserves. And MECE can be the tool that helps us widen that bottleneck.

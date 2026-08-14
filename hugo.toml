@@ -1,5 +1,4 @@
-baseURL = "https://ejemplo.com/"
-languageCode = "es-es"
+baseURL = "https://blog-cbr.pages.dev/"languageCode = "es-es"
 title = "Blog"
 theme = "PaperMod"
 
