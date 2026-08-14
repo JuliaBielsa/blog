@@ -3,6 +3,7 @@ title: "Before you automate the SOC: building playbooks for alerts you haven't s
 date: 2026-08-14
 draft: false
 math: true
+author: "Julia Bielsa"
 ---
 
 Writing reliable playbooks to guide the analysts who investigate alerts has always mattered. But when you automate that investigation with AI, it matters more than ever. A human analyst quietly compensates for the playbook's deficiencies, and even points them out so we can fix them. They also get it wrong sometimes, of course, but the damage is local: just one or a few misclassified alerts. Give the same bad instruction to an automation and you get that bad call on every single alert, with nobody there to raise a hand about it.

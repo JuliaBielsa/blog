@@ -2,6 +2,8 @@ baseURL = "https://blog-cbr.pages.dev/"
 languageCode = "es-es"
 title = "Blog"
 theme = "PaperMod"
+author = "Julia Bielsa"
 
 [params]
   defaultTheme = "auto"
+  ShowAuthor = true
