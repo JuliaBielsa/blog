@@ -3,7 +3,10 @@ languageCode = "es-es"
 title = "Blog"
 theme = "PaperMod"
 author = "Julia Bielsa"
-
 [params]
   defaultTheme = "auto"
   ShowAuthor = true
+
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/julia-bielsa-22b65010b/"
