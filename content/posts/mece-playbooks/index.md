@@ -7,11 +7,11 @@ author: "Julia Bielsa"
 slug: "mece-before-you-automate"
 ---
 
-Writing reliable playbooks to guide the analysts who investigate alerts has always mattered. But when you automate that investigation with AI, it matters more than ever. A human analyst quietly compensates for the playbook's deficiencies, and even points them out so we can fix them. They also get it wrong sometimes, of course, but the damage is local: just one or a few misclassified alerts. Give the same bad instruction to an automation and you get that bad call on every single alert, with nobody there to raise a hand about it.
+Writing reliable playbooks to guide the analysts who investigate alerts has always mattered. But when that investigation is automated with AI, it matters more than ever. A human analyst quietly compensates for the playbook's deficiencies, and even points them out so they can be fixed. They also get it wrong sometimes, of course, but the damage is local: just one or a few misclassified alerts. If that bad instruction is given to an automation, the error will propagate to every single alert, with nobody there to raise a hand about it.
 
 I'm not saying we shouldn't automate. My point is that we should do our homework before creating a disaster, and writing reliable playbooks is part of it.
 
-One of the difficulties I've always had when defining an investigation playbook is "predicting" the possible outcomes of a use case before seeing hundreds of alerts. That's what this post is about.
+**One of the difficulties I've always had when defining an investigation playbook is "predicting" the possible outcomes of a use case before seeing hundreds of alerts. That's what this post is about.**
 
 ## The request
 
@@ -19,19 +19,19 @@ A former manager asked me once to write playbooks for our L1 investigations. He 
 
 Anyone who has ever investigated an alert can see the problem. How am I supposed to think of all the possibilities beforehand, when sometimes the real reason for the alert has surprised me?
 
-So I thought — *well, managers.* I'll cover the situations that come to mind now and add more when they happen. A long time later, an idea came to me.
+So I thought — *well, managers.* I'll cover the situations that come to mind now and add more when they happen.
 
 ## How I used to write playbooks
 
-My first approach was to enumerate verifications. Check the source IP, check the user agent, check whether the device is managed. (They look obvious, but it would surprise you how lost some L1 analysts are without them.)
+**My first approach was to enumerate verifications.** Check the source IP, check the user agent, check whether the device is managed. (They look obvious, but it would surprise you how lost some L1 analysts are without them.)
 
-If I was feeling inspired I would also add the likely scenarios: the employee just installed a VPN, the device has an infostealer, the lucky employee is on holiday in some exotic (and therefore unusual) country.
+**If I was feeling inspired I would also add the likely scenarios**: the employee just installed a VPN, the device has an infostealer, the lucky employee is on holiday in some exotic (and therefore unusual) country.
 
 The drawbacks are so obvious that I'm surprised I didn't think harder about them at the time. And yet most playbooks are written in a similar way.
 
 With the first approach you end up with an analyst who has run every check and still has no idea what is going on. So they reset the password just in case and escalate.
 
-The second approach is better. If the playbook is well written, the checks lead to an outcome the analyst can act on: asking the employee to remove a VPN from a corporate device, reimaging the machine, wishing them a happy holiday. But it still has the same problem. How do you predict every possible outcome?
+The second approach is better. If the playbook is well written, the checks lead to an outcome the analyst can act on: asking the employee to remove a VPN from a corporate device, reimaging the machine, wishing them a happy holiday. **But it still has the same problem. How do you predict every possible outcome?**
 
 ## Stealing from consulting
 
@@ -41,11 +41,11 @@ MECE stands for mutually exclusive, collectively exhaustive. **Split your proble
 
 That fits our problem perfectly. We split our space of all possible outcomes for a particular use case in different outcome subsets, each one with its corresponding closure reason and remediation action (if needed). Mutual exclusivity means that our closure and remediation will be well-defined: incident or false positive, reset the password or don't. Collective exhaustiveness gives us the completeness I was after.
 
-So I only had to learn how to build one. I watched a bunch of videos on YouTube and ended up disappointed. All of them were just brainstorming outcomes until the categories felt complete. Back to square one. (To be fair, I gave up quickly, so probably there is valuable content out there.)
+So I only had to learn how to build one. I watched a bunch of videos on YouTube and ended up disappointed. All of them were just brainstorming outcomes until the categories _felt_ complete. Back to square one. (To be fair, I gave up quickly, so probably there is valuable content out there.)
 
 ## Building instead of enumerating
 
-The original request was that the categories must cover every possible outcome, and the only way I could think of was to split everything into opposing sides. That covers the whole space by definition. The device is corporate, or the device is not corporate. There is no third option, as long as "corporate device" is well defined.
+The original request was that the categories must cover every possible outcome, and the only way I could think of was **to split everything into opposing sides. That covers the whole space by definition.** The device is corporate, or the device is not corporate. There is no third option, as long as "corporate device" is well defined.
 
 And it doesn't stop there. Take a second property, unrelated to the first, and intersect it with the first one. Now you have four scenarios and they are still complete.
 
@@ -75,7 +75,7 @@ Let's say we have a use case that fires when someone activates the Global Admini
 
 Two assumptions first, because we need to first define our universe. One, an activation of the role took place. Two, there was a sign-in from that user before the activation.
 
-Note that the properties and partitions defined below are just an example, and may not fit every environment. The idea is to illustrate the process; the actual partitions should be tailored to the telemetry and priorities of each organization.
+The properties and partitions defined below are just an example, and may not fit every environment. The idea is to illustrate the process; the actual partitions should be tailored to the telemetry and priorities of each organization.
 
 Now the properties, each with its complement:
 
@@ -84,7 +84,7 @@ Now the properties, each with its complement:
 - **C₁** the sign-in was Paco's / **C₂** it wasn't
 - **D₁** the sign-in came from a corporate device / **D₂** it didn't
 
-Note that when we say Paco above, we mean the actual person, not just his account. His account could have been compromised, stolen, used without his permission, etc. The account is always Paco's account; the actual person using it can be Paco, or not.
+Note that when we say Paco above, we mean the actual person, not just his account. His account could have been compromised, stolen, used without his permission, etc. The only account involved here is Paco's account; the actual person using it can be Paco, or not.
 
 And now we split:
 
@@ -102,24 +102,26 @@ And now we split:
 
 ![Partition tree for the Global Administrator activation use case](mece_global_admin_partition_tree.png)
 
-One thing worth noticing here. There will be cases where it isn't possible to tell two branches apart with the available telemetry. The first branch and A₂ ∩ C₁ ∩ D₁ ∩ B₁, for example, will look the same to the analyst. In that situation we need to assume the analyst (or the automation) stops there and treats both as equivalent — legitimate activity, in this case. It is just not the goal of this use case to detect that somebody is using the victim's machine. And we must define a clear point where the investigation stops, particularly if it is automated.
+One thing worth noticing here. There will be cases where it isn't possible to tell two branches apart with the available telemetry. The first branch (A₁ ∩ B₁) and A₂ ∩ C₁ ∩ D₁ ∩ B₁, for example, will look the same to the analyst. In that situation we need to assume the analyst (or the automation) stops there and treats both as equivalent — legitimate activity, in this case. It is just not the goal of this use case to detect that somebody is using the victim's machine. And we must define a clear point where the investigation stops, particularly if it is automated.
 
-Another not so necessary (you can skip this) but funny thing. As promised, our subsets contain all possible scenarios, even stupid ones. For example, imagine an attacker has stolen Paco's account and signs in from his attacker device (C₂ ∩ D₂). Now Paco has installed an infostealer in that attacker device so he is able to steal the cookie from the Paco account that the attacker is using. He then uses the cookie in his corporate device and legitimately activates the Global Administrator role (A₁ ∩ B₁). Well this ridiculous outcome is also considered in one of our branches. It is the first one: A₁ ∩ B₁, since, by definition, this includes A₁ ∩ B₁ ∩ C₂ ∩ D₂.
+Another not so necessary (you can skip this one) but funny thing. As promised, our subsets contain all possible scenarios, even stupid ones. For example, imagine an attacker has stolen Paco's account and signs in from his attacker device (C₂ ∩ D₂). Now imagine Paco has installed an infostealer in that attacker device and he is able to steal the cookie (his own account cookie) from the attacker laptop. Paco then uses the stolen cookie in his corporate device and legitimately activates the Global Administrator role (A₁ ∩ B₁). Well this ridiculous outcome is also considered in one of our branches. It is the first one: A₁ ∩ B₁, since, by definition, this includes A₁ ∩ B₁ ∩ C₂ ∩ D₂.
+
+**The key point: it is not that we predicted every possible outcome for the use case (that is impossible). It is that our result is just as valid either way. We defined a partition of the space of all possible outcomes, and that partition includes every single one of them. We made sure to split the branches until each one had a clear, defined closure reason and response. We don't have to think of every potential scenario, because we can guarantee that whatever happens will land in one — and only one — branch.**
 
 ## What this tells you before you write the rule
 
 Here's the part I wasn't expecting when I started doing this.
 
-If you build the partition and find you can't tell most of the branches apart with the telemetry you have (you can't tell whether the device is corporate, you can't tell whether the sign-in was really Paco's), then you don't have a playbook problem. You have a use case that either doesn't make sense in your environment, or needs more telemetry before it does.
+If you build the partition and find you can't tell most of the branches apart with the telemetry you have (you can't tell whether the device is corporate, you can't tell whether the sign-in was really Paco's, etc.), then you don't have a playbook problem. You have a use case that either doesn't make sense in your environment, or needs more telemetry before it does.
 
 Putting an analyst on an alert whose branches you can't separate is going to go badly. They'll run every check, land nowhere, reset the password just in case and escalate. Which is where we started.
 
-So the MECE is not only just a way of structuring the playbook, it can also be a viability test you run before writing the rule. I was also surprised about never having thought about the viability of a use case based on the telemetry necessary for its investigation (apart from some very obvious cases). And it should be equally important as the telemetry necessary for the rule itself.
+**So the MECE is not only just a way of structuring the playbook, it can also be a viability test you run before writing the rule**. I was also surprised about never having thought about the viability of a use case based on the telemetry necessary for its investigation (apart from some very obvious cases). And it should be equally important as the telemetry necessary for the rule itself.
 
 ## Back to automation
 
 The MECE is for whoever writes the playbook, not for the analyst. The analyst runs the checks in order and the category should fall out of the answers.
 
-Which is the point I wanted to get to. The hard part was never the automation, it's the work that must exist before it.
+Which is the point I wanted to get to. **The hard part was never the automation, it's the work that must exist before it.**
 
 As long as there are humans in the loop, writing low quality playbooks is not always a critical issue: the analyst fills the gaps with their own judgement and nobody finds out the instructions were incomplete. And if it goes wrong, we can always blame the inexperienced analyst. The moment you automate, the truth comes out. The automation will never improvise and do a better job than the instructions. Best case scenario, it will keep making the same mistakes as an analyst (it will make them faster though).

@@ -1,11 +1,15 @@
 baseURL = "https://juliabielsa.com/"
 languageCode = "es-es"
-title = "Blog"
+title = "Bottom-Up Cybersecurity"
 theme = "PaperMod"
 author = "Julia Bielsa"
 [params]
   defaultTheme = "auto"
   ShowAuthor = true
+  ShowReadingTime = true
+
+  [params.homeInfoParams]
+    Title = "Julia Bielsa"
 
   [[params.socialIcons]]
     name = "linkedin"
