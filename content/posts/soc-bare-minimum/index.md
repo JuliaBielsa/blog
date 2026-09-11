@@ -1,13 +1,14 @@
 ---
 title: "SOC Bare Minimum: Getting Out of the Matrix"
-date: 2026-08-28
+date: 2026-09-10
 slug: soc-bare-minimum
-draft: true
+draft: false
+author: "Julia Bielsa"
 ---
 
 How could we miss an inbound SSH connection from an external IP? The "T1133: External Remote Services" cell in our MITRE matrix was green.
 
-Of course it was. We had a rule for RDP, another one for the VPN, even one for some fancy Docker abuse. But not for SSH.
+Of course it was. We had a rule for RDP, another two for our VPN, even one for some fancy Docker abuse. But not for SSH.
 
 Crazy, right? And yet this is how most SOCs measure their detection gaps.
 
@@ -31,20 +32,20 @@ So before selecting any use case, build an inventory of every area you have, or 
 
 ## The non-negotiable detections
 
-After many years post-audit and post-incident embarrassment, I identified several detection categories that are non-negotiable. They are concepts, not specific rules, which means they can be applied, with some tailoring, to any area you want to cover.
+After many years of post-audit and post-incident embarrassment, I identified several detection categories that are non-negotiable. They are concepts, not specific rules, which means they can be applied, with some tailoring, to any area you want to cover.
 
-1. **Source/telemetry health.** It does not make sense to build detections on top of unreliable log sources. If possible, monitor health per appliance, not per source: a single source can aggregate several servers, and if some of them fail, the rules keep running on the others while you quietly lose visibility. Many companies, probably yours included, are required to store these logs for compliance. That means a prolonged ingestion gap is not just a blind spot, it is a compliance problem.
-2. **New privileged accounts.** Identify, in each area, which groups or roles count as privileged, and monitor when accounts are added to them.
-3. **Unused privileged account.** Monitor the use of privileged accounts that should never be used, such as break-glass accounts or built-in Administrators, as well as any change made to them. In general, almost any event involving these accounts should raise an alert.
+1. **Source/telemetry health**. It does not make sense to build detections on top of unreliable log sources. If possible, monitor health per appliance, not per source: a single source can aggregate several servers, and if some of them fail, the rules keep running on the others while you quietly lose visibility. Many companies are required to store these logs for compliance. That means a prolonged ingestion gap is not just a blind spot, it is also a compliance problem.
+2. **New privileged accounts**. Identify, in each area, which groups or roles count as privileged and monitor when accounts are added to them.
+3. **Unused privileged accounts.** Monitor the use of privileged accounts that should never be used, such as break-glass accounts or built-in Administrators, as well as any change made to them. In general, almost any event involving these accounts should raise an alert.
 4. **Critical platform change**. An architecture-level change to the platform's trust or authentication plane — a new federation trust, a schema change, a modification of the root or organization trust.
-5. **Security lowering platform change**. Any platform-level change that weakens your security posture: removing a conditional access policy, turning off a native security feature, deleting backups.
+5. **Security-lowering platform change**. Any platform-level change that weakens your security posture: removing a conditional access policy, turning off a native security feature, deleting backups.
 6. **Inbound remote-admin connections from outside.** Administering the internal network from an external address should go through controlled channels only — a bastion, the VPN, a gateway. Anything else, like a direct admin connection from outside, is something you want to know about. Identify the standard connection methods in each platform and write a rule for every one of them.
 
 These categories share some properties that make them non-negotiable:
 
-- Impact. Every one of these detects something critical: a disruption in your security monitoring, a downgrade of your security posture, or an incident in itself.
-- Easy implementation. Once you have mapped the concept to your area and identified the action to detect, the rule itself is straightforward. It usually involves one or a few specific events, with no behavioral baseline and no external feeds.
-- Near zero false positives. These concepts barely produce false positives, because they all describe actions you must know about. Even when performed legitimately, someone has to confirm it was intentional, and revoke it when it goes against the security policy.
+- **Impact.** Every one of these detects something critical: a disruption in your security monitoring, a downgrade of your security posture, or an incident in itself.
+- **Easy implementation.** Once you have mapped the concept to your area and identified the action to detect, the rule itself is straightforward. It usually involves one or a few specific events, with no behavioral baseline and no external feeds.
+- **Near zero false positives.** These detections barely produce false positives, because they all describe actions you must know about. Even when performed legitimately, someone has to confirm it was intentional, and revoke it when it goes against the security policy.
 
 This list is not exhaustive. Every organization is its own world, and you may identify categories I haven't. The properties, though, are universal: **if a category is easy to implement, barely produces false positives, and has real impact, it is non-negotiable.**
 
@@ -52,11 +53,11 @@ This list is not exhaustive. Every organization is its own world, and you may id
 
 Once all the above categories are implemented across **all areas**, you can move on to the next detection step. These categories don't have the impact of the detections above, they are usually not so easy to implement and sometimes it can be a pain to deal with the false positive rate. That is why they don't belong to the previous group.
 
-7. **IOC checking.** I am not a big fan of IOCs, but they can be very useful sometimes, especially to spot forgotten devices with no EDR. In my experience, the key point is to keep it simple: just high-confidence indicators, such as Tor exit nodes or fresh feeds from a very reliable source.
-- For inbound traffic, only successful connections matter: a failed sign-in from a malicious IP is just someone trying a password, but a successful one is a compromised account.
-- For outbound, success is irrelevant. And please: a blocked outbound connection to a well-known IOC is still a real incident. If the device is trying to reach a C2, it is compromised.
-8. **Disabling the security control itself.** Any EDR or security tool being turned off, any disabling of logging, any log clearing.
-9. **Execution of known hacking tools.** No behavioral detection needed here, just the name and signature. Some people say it is not worth detecting AzureHound by user agent because it can be easily changed, but then they don't implement an alternative detection either. Imagine missing AzureHound even when the attacker was sloppy enough to leave the default user agent.
+1. **IOC checking.** I am not a big fan of IOCs, but they can be very useful sometimes, especially to spot forgotten devices with no EDR. In my experience, the key point is to keep it simple: just high-confidence indicators, such as Tor exit nodes or fresh feeds from a very reliable source.
+    - For inbound traffic, only successful connections matter: a failed sign-in from a malicious IP is just someone trying a password, but a successful one is a compromised account.
+    - For outbound, success is irrelevant. A blocked outbound connection to a well-known IOC is still a real incident. If the device is trying to reach a C2, it is compromised.
+2. **Disabling the security control itself.** Any EDR or security tool being turned off, any disabling of logging, any log clearing. It is in this tier because, in practice, it creates more false positives than you would expect: agent updates, maintenance windows, etc.
+3. **Execution of known hacking tools.** No behavioral detection needed here, just the name and signature. Some people say it is not worth detecting AzureHound by user agent because it can be easily changed, but then they don't implement an alternative detection either. Imagine missing AzureHound even when the attacker was sloppy enough to leave the default user agent.
 
 ## Where MITRE helps
 
@@ -70,6 +71,8 @@ Once the detections above are implemented, you can move on. You are probably mis
 
 ## It works because it is trivial
 
-These categories may feel basic, even trivial. That is exactly the point. I bet most environments are missing at least a few of them.
+These categories may feel basic, even trivial. That is because they are, and yet I bet most environments are missing at least a few of them.
+
+My intention was never to write another list of use cases, but to create a method that allows anyone to write their own.
 
 Would you have caught the inbound SSH?
